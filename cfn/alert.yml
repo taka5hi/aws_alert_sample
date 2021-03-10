@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Import test
+
+Parameters:
+  ImageTag:
+    Type: String
+    Default: latest
+    Description: Enter docker image tag.
+
+Resources:
+  LambdaFunction:
+    Type: "AWS::Lambda::Function"
+    DeletionPolicy: Delete
+    Properties:
+      Description: ""
+      FunctionName: "test"
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ":"
+            - - "634671122973.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
+              - Fn::Ref: ImageTag
+      PackageType: Image
+      MemorySize: 128
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/test-role-jkvt52rs"
+      Timeout: 3
+      TracingConfig:
+        Mode: "PassThrough"
