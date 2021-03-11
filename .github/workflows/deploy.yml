@@ -15,6 +15,9 @@ on:
 
 env:
   AWS_REGION: ap-northeast-1
+  IMAGE_REPOSITORY: 634671122973.dkr.ecr.ap-northeast-1.amazonaws.com
+  IMAGE_NAME: ecr-for-test
+  IMAGE_TAG: ${{ github.sha }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -45,10 +48,22 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
+        id: build-push-image
         env:
-          ECR_REGISTRY: 634671122973.dkr.ecr.ap-northeast-1.amazonaws.com
-          ECR_REPOSITORY: ecr-for-test
-          IMAGE_TAG: ${{ github.sha }}
+          ECR_REGISTRY: ${{ env.IMAGE_REPOSITORY }}
+          ECR_REPOSITORY: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./lambda/publish-to-sns
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # deploy CloudFormation stack
+      # https://github.com/marketplace/actions/aws-cloudformation-deploy-cloudformation-stack-action-for-github-actions
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: test
+          template: cfn/alert.yml
+          parameter-overrides: "ImageTag=$IMAGE_TAG"
+        env:
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
