@@ -28,10 +28,11 @@ Resources:
         ImageUri:
           Fn::Join:
             - ":"
-            - - "634671122973.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
+            - - !Sub "${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
               - Ref: ImageTag
       PackageType: Image
       MemorySize: 128
+      # TODO: create role for this purpuse
       Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/test-role-jkvt52rs"
       Timeout: 3
       TracingConfig:
@@ -75,10 +76,11 @@ Resources:
         ImageUri:
           Fn::Join:
             - ":"
-            - - "634671122973.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
+            - - !Sub "${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
               - Ref: ImageTag
       PackageType: Image
       MemorySize: 128
+      # TODO: create role for this purpuse
       Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/test-role-jkvt52rs"
       Timeout: 3
       TracingConfig:
