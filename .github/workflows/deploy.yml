@@ -64,6 +64,4 @@ jobs:
         with:
           name: test
           template: cfn/alert.yml
-          parameter-overrides: "ImageTag=$IMAGE_TAG"
-        env:
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          parameter-overrides: "ImageTag=${{ env.IMAGE_TAG }}"
