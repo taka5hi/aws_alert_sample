@@ -19,7 +19,7 @@ Resources:
           Fn::Join:
             - ":"
             - - "634671122973.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
-              - Fn::Ref: ImageTag
+              - Ref: ImageTag
       PackageType: Image
       MemorySize: 128
       Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/test-role-jkvt52rs"
