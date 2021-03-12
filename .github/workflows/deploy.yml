@@ -66,3 +66,4 @@ jobs:
           name: test
           template: cfn/alert.yml
           parameter-overrides: "ImageTag=${{ env.IMAGE_TAG }}"
+          capabilities: "CAPABILITY_NAMED_IAM"
