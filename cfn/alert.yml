@@ -136,7 +136,7 @@ Resources:
   SendToSlackIAMManagedPolicy:
     Type: "AWS::IAM::ManagedPolicy"
     Properties:
-      ManagedPolicyName: "publish-to-sns-lambda-policy"
+      ManagedPolicyName: "send-to-slack-lambda-policy"
       Path: "/service-role/"
       PolicyDocument: !Sub |
         {
