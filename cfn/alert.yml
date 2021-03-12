@@ -32,8 +32,7 @@ Resources:
               - Ref: ImageTag
       PackageType: Image
       MemorySize: 128
-      # TODO: create role for this purpuse
-      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/test-role-jkvt52rs"
+      Role: !GetAtt PublishToSNSIAMRole.Arn
       Timeout: 3
       TracingConfig:
         Mode: "PassThrough"
@@ -80,8 +79,56 @@ Resources:
               - Ref: ImageTag
       PackageType: Image
       MemorySize: 128
-      # TODO: create role for this purpuse
-      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/test-role-jkvt52rs"
+      Role: !GetAtt SendToSlackIAMRole.Arn
       Timeout: 3
       TracingConfig:
         Mode: "PassThrough"
+
+  # IAM role for lambda
+  PublishToSNSIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/service-role/"
+      RoleName: "publish-to-sns-lambda-role"
+      AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Ref IAMManagedPolicy
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+
+  SendToSlackIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/service-role/"
+      RoleName: "send-to-slack-lambda-role"
+      AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Ref IAMManagedPolicy
+
+  IAMManagedPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "basic-lambda-policy-for-alert-notifier"
+      Path: "/service-role/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "logs:CreateLogGroup",
+                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test:*"
+                    ]
+                }
+            ]
+        }
