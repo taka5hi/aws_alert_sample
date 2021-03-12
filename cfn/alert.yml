@@ -93,7 +93,7 @@ Resources:
       AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
       MaxSessionDuration: 3600
       ManagedPolicyArns:
-        - !Ref IAMManagedPolicy
+        - !Ref PublishToSNSIAMManagedPolicy
         - arn:aws:iam::aws:policy/AmazonSNSFullAccess
 
   SendToSlackIAMRole:
@@ -104,12 +104,12 @@ Resources:
       AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
       MaxSessionDuration: 3600
       ManagedPolicyArns:
-        - !Ref IAMManagedPolicy
+        - !Ref SendToSlackIAMManagedPolicy
 
-  IAMManagedPolicy:
+  PublishToSNSIAMManagedPolicy:
     Type: "AWS::IAM::ManagedPolicy"
     Properties:
-      ManagedPolicyName: "basic-lambda-policy-for-alert-notifier"
+      ManagedPolicyName: "publish-to-sns-lambda-policy"
       Path: "/service-role/"
       PolicyDocument: !Sub |
         {
@@ -127,7 +127,34 @@ Resources:
                         "logs:PutLogEvents"
                     ],
                     "Resource": [
-                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test:*"
+                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/publish-to-sns:*"
+                    ]
+                }
+            ]
+        }
+
+  SendToSlackIAMManagedPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "publish-to-sns-lambda-policy"
+      Path: "/service-role/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "logs:CreateLogGroup",
+                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/send-to-slack:*"
                     ]
                 }
             ]
