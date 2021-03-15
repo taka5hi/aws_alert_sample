@@ -6,7 +6,7 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-def lambda_handler(event, context):
+def handler(event, context):
     data = zlib.decompress(base64.b64decode(event['awslogs']['data']), 16+zlib.MAX_WBITS)
     data_json = json.loads(data)
     log_json = json.loads(json.dumps(data_json["logEvents"][0], ensure_ascii=False))
