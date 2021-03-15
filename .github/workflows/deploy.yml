@@ -50,7 +50,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR (publish to sns)
-        id: build-push-image
+        id: build-push-image-publish-to-sns
         env:
           ECR_REGISTRY: ${{ env.IMAGE_REPOSITORY }}
           ECR_REPOSITORY: ${{ env.PUBLISH_TO_SNS_IMAGE_NAME }}
@@ -60,7 +60,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Build, tag, and push image to Amazon ECR (send to slack)
-        id: build-push-image
+        id: build-push-image-send-to-slack
         env:
           ECR_REGISTRY: ${{ env.IMAGE_REPOSITORY }}
           ECR_REPOSITORY: ${{ env.SEND_TO_SLACK_IMAGE_NAME }}
