@@ -36,6 +36,9 @@ Resources:
       Timeout: 3
       TracingConfig:
         Mode: "PassThrough"
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref SNSTopic
 
   # permission for subscribe cloudwatch logs
   Permission:
