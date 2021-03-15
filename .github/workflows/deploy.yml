@@ -15,8 +15,9 @@ on:
 
 env:
   AWS_REGION: ap-northeast-1
-  IMAGE_REPOSITORY: 634671122973.dkr.ecr.ap-northeast-1.amazonaws.com
-  IMAGE_NAME: ecr-for-test
+  IMAGE_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+  PUBLISH_TO_SNS_IMAGE_NAME: ecr-for-test
+  SEND_TO_SLACK_IMAGE_NAME: ecr-for-test2
   IMAGE_TAG: ${{ github.sha }}
   # IMAGE_TAG: 3961072817e8972946e5e9722ed3c9467b58f659
 
@@ -48,14 +49,24 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push image to Amazon ECR (publish to sns)
         id: build-push-image
         env:
           ECR_REGISTRY: ${{ env.IMAGE_REPOSITORY }}
-          ECR_REPOSITORY: ${{ env.IMAGE_NAME }}
+          ECR_REPOSITORY: ${{ env.PUBLISH_TO_SNS_IMAGE_NAME }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./lambda/publish-to-sns
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Build, tag, and push image to Amazon ECR (send to slack)
+        id: build-push-image
+        env:
+          ECR_REGISTRY: ${{ env.IMAGE_REPOSITORY }}
+          ECR_REPOSITORY: ${{ env.SEND_TO_SLACK_IMAGE_NAME }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./lambda/send_to_slack
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # deploy CloudFormation stack
@@ -65,5 +76,5 @@ jobs:
         with:
           name: test
           template: cfn/alert.yml
-          parameter-overrides: "ImageTag=${{ env.IMAGE_TAG }}"
+          parameter-overrides: "ImageTag=${{ env.IMAGE_TAG }},SlackWebHookUrl=${{ secrets.SLACK_WEBHOOK_URL }}"
           capabilities: "CAPABILITY_NAMED_IAM"

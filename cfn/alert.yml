@@ -6,6 +6,10 @@ Parameters:
     Type: String
     Default: latest
     Description: Enter docker image tag.
+  SlackWebHookUrl:
+    Type: String
+    Default: Slack-URL
+    Description: Enter slack web hook url.
 
 Resources:
   # sunscription filter for lambda
@@ -87,7 +91,7 @@ Resources:
         ImageUri:
           Fn::Join:
             - ":"
-            - - !Sub "${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test"
+            - - !Sub "${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-for-test2"
               - Ref: ImageTag
       PackageType: Image
       MemorySize: 128
@@ -95,6 +99,9 @@ Resources:
       Timeout: 3
       TracingConfig:
         Mode: "PassThrough"
+      Environment:
+        Variables:
+          SLACK_WEBHOOK_URL: !Ref SlackWebHookUrl
 
   # IAM role for lambda
   PublishToSNSIAMRole:
