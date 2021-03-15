@@ -66,7 +66,7 @@ jobs:
           ECR_REPOSITORY: ${{ env.SEND_TO_SLACK_IMAGE_NAME }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./lambda/send_to_slack
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./lambda/send-to-slack
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # deploy CloudFormation stack
