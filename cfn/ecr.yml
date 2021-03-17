@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "ECR for alert notification"
+Resources:
+  PublishToSNSECRRepository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "publish-to-sns"
+      LifecyclePolicy:
+        RegistryId: !Ref AWS::AccountId
+
+  SendToSlackECRRepository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "send-to-slack"
+      LifecyclePolicy:
+        RegistryId: !Ref AWS::AccountId
+
+Outputs:
+  PublishToSNSECRRepositoryName:
+    Description: "Name of Publish To SNS Repository"
+    Value: !Ref PublishToSNSECRRepository
+    Export:
+      Name: !Sub "${AWS::StackName}-PublishToSNSECRRepositoryName"
+  SendToSlackECRRepositoryName:
+    Description: "Name of Send To Slack Repository"
+    Value: !Ref SendToSlackECRRepository
+    Export:
+      Name: !Sub "${AWS::StackName}-SendToSlackECRRepositoryName"
