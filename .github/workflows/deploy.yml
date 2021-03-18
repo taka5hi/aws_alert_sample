@@ -16,10 +16,9 @@ on:
 env:
   AWS_REGION: ap-northeast-1
   IMAGE_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-  PUBLISH_TO_SNS_IMAGE_NAME: ecr-for-test
-  SEND_TO_SLACK_IMAGE_NAME: ecr-for-test2
+  PUBLISH_TO_SNS_IMAGE_NAME: publish-to-sns
+  SEND_TO_SLACK_IMAGE_NAME: send-to-slack
   IMAGE_TAG: ${{ github.sha }}
-  # IMAGE_TAG: 3961072817e8972946e5e9722ed3c9467b58f659
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -76,5 +75,8 @@ jobs:
         with:
           name: test
           template: cfn/alert.yml
-          parameter-overrides: "ImageTag=${{ env.IMAGE_TAG }},SlackWebHookUrl=${{ secrets.SLACK_WEBHOOK_URL }}"
           capabilities: "CAPABILITY_NAMED_IAM"
+          parameter-overrides: >-
+            ImageTag=${{ env.IMAGE_TAG }},
+            SlackWebHookUrl=${{ secrets.SLACK_WEBHOOK_URL }},
+            EcrStackName=${{ secrets.AWS_ECR_STACK_NAME }}
