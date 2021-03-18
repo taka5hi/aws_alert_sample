@@ -33,8 +33,10 @@ Resources:
       Code:
         ImageUri: !Sub
           - "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageName}:${ImageTag}"
-          - ImageName: Fn::ImportValue
-            !Sub "${EcrStackName}-PublishToSNSECRRepositoryName"
+          - ImageName:
+              {
+                Fn::ImportValue: !Sub "${EcrStackName}-PublishToSNSECRRepositoryName",
+              }
       PackageType: Image
       MemorySize: 128
       Role: !GetAtt PublishToSNSIAMRole.Arn
@@ -93,8 +95,10 @@ Resources:
       Code:
         ImageUri: !Sub
           - "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageName}:${ImageTag}"
-          - ImageName: Fn::ImportValue
-            !Sub "${EcrStackName}-SendToSlackECRRepositoryName"
+          - ImageName:
+              {
+                Fn::ImportValue: !Sub "${EcrStackName}-SendToSlackECRRepositoryName",
+              }
       PackageType: Image
       MemorySize: 128
       Role: !GetAtt SendToSlackIAMRole.Arn
