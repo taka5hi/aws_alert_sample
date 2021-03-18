@@ -73,7 +73,7 @@ jobs:
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          name: test
+          name: alert-notification
           template: cfn/alert.yml
           capabilities: "CAPABILITY_NAMED_IAM"
           parameter-overrides: >-
