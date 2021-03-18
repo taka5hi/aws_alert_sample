@@ -6,14 +6,46 @@ Resources:
     Properties:
       RepositoryName: "publish-to-sns"
       LifecyclePolicy:
-        RegistryId: !Ref AWS::AccountId
+        LifecyclePolicyText: |
+          {
+              "rules": [
+                  {
+                      "rulePriority": 1,
+                      "description": "Delete more than 20 images",
+                      "selection": {
+                          "tagStatus": "any",
+                          "countType": "imageCountMoreThan",
+                          "countNumber": 20
+                      },
+                      "action": {
+                          "type": "expire"
+                      }
+                  }
+              ]
+          }
 
   SendToSlackECRRepository:
     Type: "AWS::ECR::Repository"
     Properties:
       RepositoryName: "send-to-slack"
       LifecyclePolicy:
-        RegistryId: !Ref AWS::AccountId
+        LifecyclePolicyText: |
+          {
+              "rules": [
+                  {
+                      "rulePriority": 1,
+                      "description": "Delete more than 20 images",
+                      "selection": {
+                          "tagStatus": "any",
+                          "countType": "imageCountMoreThan",
+                          "countNumber": 20
+                      },
+                      "action": {
+                          "type": "expire"
+                      }
+                  }
+              ]
+          }
 
 Outputs:
   PublishToSNSECRRepositoryName:
